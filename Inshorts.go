@@ -10,13 +10,13 @@ import (
     "github.com/gorilla/mux"
 )
 
-// Article - Our struct for all articles
+
 type Article struct {
     Id      string    `json:"Id"`
     Title   string `json:"Title"`
     Subtitle    string `json:"sub"`
-	Content string `json:"content"`
-	Creationts string `json:"creationts"`
+    Content string `json:"content"`
+    Creationts string `json:"creationts"`
 }
 
 var Articles []Article
@@ -63,15 +63,11 @@ func search(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func createNewArticle(w http.ResponseWriter, r *http.Request) {
-    // get the body of our POST request
-    // unmarshal this into a new Article struct
-    // append this to our Articles array.    
+func createNewArticle(w http.ResponseWriter, r *http.Request) {  
     reqBody, _ := ioutil.ReadAll(r.Body)
     var article Article 
     json.Unmarshal(reqBody, &article)
-    // update our global Articles array to include
-    // our new Article
+    
     Articles = append(Articles, article)
 
     json.NewEncoder(w).Encode(article)
@@ -80,12 +76,13 @@ func createNewArticle(w http.ResponseWriter, r *http.Request) {
 
 func handleRequests() {
     myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", search)
-	myRouter.HandleFunc("/home", homePage)
-    myRouter.HandleFunc("/articles", returnAllArticles)
-    myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
    
-	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
+   myRouter.HandleFunc("/home", homePage)
+   myRouter.HandleFunc("/articles", createNewArticle).Methods("POST")
+   myRouter.HandleFunc("/articles/{id}", returnSingleArticle)
+   myRouter.HandleFunc("/articles", returnAllArticles)
+  
+   myRouter.HandleFunc("/", search)
 	
     log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
